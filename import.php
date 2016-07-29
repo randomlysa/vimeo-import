@@ -73,14 +73,28 @@ while ($getAlbumsResponse["body"]["data"][$i]["name"]) {
 
 // make a form here from albumInfo to pick which albums to import.
 
+print "
+		<form method=\"post\">\n
+		<h1>List of Albums</h1>
+	";
+
 foreach ($albumInfo as $album) {
 	$getAlbum = $album['uri'];
 	$title = $album['name'];
 	
 	$albumNameInsert = $title;
 	
-	print "<h1>Album title: $title</h1>";
+	print "
+			<label>
+			<input type=\"checkbox\" value=\"$title\">$title
+			</label><br>\n
+			
+	";
 }
+print "
+		<input type=\"submit\" value=\"Check Selected Albums for New Videos\">
+	</form>
+	";
 
 print "stopping here";
 exit;
