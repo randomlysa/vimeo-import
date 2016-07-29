@@ -1,0 +1,16 @@
+<?php
+
+$config = array();
+
+// database
+$config['dbhost'] = 'DATABASE_HOST';
+$config['dbuser'] = 'DATABASE_USER';
+$config['dbpass'] = 'DATABASE_PASSWORD';
+$config['database'] = 'DATABASE_NAME';
+
+// vimeo
+$config['vimeo_client_id'] = 'VIMEO_CLIENT_ID';
+$config['vimeo_client_secret'] = 'VIMEO_CLIENT_SECRET';
+$config['vimeo_access_token'] = 'VIMEO_ACCESS_TOKEN';
+
+?>
