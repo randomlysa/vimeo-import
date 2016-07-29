@@ -2,3 +2,4 @@
 composer.lock
 
 config.inc.php
+/examples-ignore/*
