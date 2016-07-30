@@ -81,14 +81,15 @@ print "
 	";
 
 foreach ($albumInfo as $album) {
-	$getAlbum = $album['uri'];
+	// $getAlbum = $album['uri'];
+	$albumURI = $album['uri'];
 	$title = $album['name'];
 	
 	$albumNameInsert = $title;
 	
 	print "
 			<label>
-			<input type=\"checkbox\" value=\"$title\">$title
+			<input type=\"checkbox\" name=\"$title\" value=\"$albumURI\">$title
 			</label><br>\n
 			
 	";
