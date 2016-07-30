@@ -99,12 +99,23 @@ print "
 	</form>
 	";
 
-print "stopping here";
-exit;
+
+$selectedAlbumsArray = array();
+// see if there are any albums in $_POST[]
+foreach ($_POST as $param_name => $param_val) {
+    echo "Param: $param_name; Value: $param_val<br />\n";
+    // add selected albums to an array using same format as $albumInfo (all albums from vimeo)
+	// selectedAlbumsArray["$param_name"] = $param_val;
+	$selectedAlbumsArray[] = array("name" => $param_name, "uri" => $param_val);
+}
+
+
+// if there is post data (selected albums), run the rest of the script.
+if ($selectedAlbumsArray) {
 
 // foreach starts here for individual albums
-foreach ($albumInfo as $album) {
-	// albuminfo keys are uri and name		
+foreach ($selectedAlbumsArray as $album) {
+	// albuminfo keys are uri and name
 	// i think $getAlbum used the uri, so let's set $getAlbum to album['uri']
 	$getAlbum = $album['uri'];
 	$title = $album['name'];
@@ -268,6 +279,7 @@ foreach ($albumInfo as $album) {
 			<?php foreach ($listSkipped as $video) { print "$video<br />"; } ?>
 		</div>
 <?php
+		}
 	}
 }
 ?>
