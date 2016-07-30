@@ -1,15 +1,15 @@
 <?php
 // two slashes = comment, save (don't delete)
 /// three slashes = debug lines (mostly print/print_r, etc)
-//// four = temporarily disabled, probably for testing purposes 
+//// four = temporarily disabled, probably for testing purposes
 
 /*
-	goes through ****all*** the videos in an album, imports oldest to newest. 
+	goes through ****all*** the videos in an album, imports oldest to newest.
 	* perhaps in the future, allow the ability to import only one page, to speed up adding new videos?
-	* import2 will : 
-		get all albums, 
-		get number of videos in each album, 
-		compare to number of videos in DB for that album, 
+	* import2 will :
+		get all albums,
+		get number of videos in each album,
+		compare to number of videos in DB for that album,
 		ask for (number of videos in album) - (number of videos in DB)
 		import all new videos for all albums
 */
@@ -55,7 +55,7 @@ $key = $_GET["key"];
 		die('Error : ('. $mysqli->connect_errno .') '. $mysqli->connect_error);
 	}
 
-// get all albums from Vimeo 
+// get all albums from Vimeo
 $getAlbumsResponse = $lib->request('/me/albums/', 'GET');
 
 // pull name/url for each album to make a form
@@ -69,7 +69,7 @@ while ($getAlbumsResponse["body"]["data"][$i]["name"]) {
 	// get just the unique part of the URI - the digits that indicate the actual album
 	$finalURI = $uriPieces[4];
 	$albumName = $getAlbumsResponse["body"]["data"][$i]["name"];
-	
+
 	$albumInfo[] = array("name" => $albumName, "uri" => $finalURI);
 	$i++;
 }
@@ -84,14 +84,14 @@ foreach ($albumInfo as $album) {
 	// $getAlbum = $album['uri'];
 	$albumURI = $album['uri'];
 	$title = $album['name'];
-	
+
 	$albumNameInsert = $title;
-	
+
 	print "
 			<label>
 			<input type=\"checkbox\" name=\"$title\" value=\"$albumURI\">$title
 			</label><br>\n
-			
+
 	";
 }
 print "
@@ -119,17 +119,17 @@ foreach ($selectedAlbumsArray as $album) {
 	// i think $getAlbum used the uri, so let's set $getAlbum to album['uri']
 	$getAlbum = $album['uri'];
 	$title = $album['name'];
-	
+
 	$albumNameInsert = $title;
-	
+
 	print "<h1>Album title: $title</h1>";
-	
-	
+
+
 	///print "<pre>";
 	///print_r (array_values($album));
 	///print "</pre>";
-		
-	
+
+
 	$numberOfVideosInAlbumResponse = $lib->request("/me/albums/$getAlbum", "GET");
 	// compare albumTotalVideosVimeo (vimeo) to number of videos in DB for that album ($title = album name)
 	$albumTotalVideosVimeo =  $numberOfVideosInAlbumResponse["body"]["metadata"]["connections"]["videos"]["total"];
@@ -140,8 +140,8 @@ foreach ($selectedAlbumsArray as $album) {
 	$numberOfVideosToImport = $albumTotalVideosVimeo - $albumTotalVideosInDB;
 	// print "Number of videos in vimeo: ${albumTotalVideosVimeo}. Number of videos in DB ${albumTotalVideosInDB}.";
 	///print "Need to import ${numberOfVideosToImport}<br />";
-	
-	// to make stats 
+
+	// to make stats
 	$statsAdded = 0;
 	$statsSkipped = 0;
 	$listAdded = array();
@@ -151,14 +151,14 @@ foreach ($selectedAlbumsArray as $album) {
 	// if $numberOfVideosToImport > 50 I can use the while loop. if there are less than 50, I can request up to 50 videos at a time, so I only need 1 "page"
 	if ($numberOfVideosToImport <= 50) {
 		///print "Importing under 50 videos for $title.";
-		
+
 		$response = array_reverse($lib->request("/me/albums/$getAlbum/videos", array('per_page' => $numberOfVideosToImport, 'sort' => 'alphabetical', 'direction' => 'desc'), 'GET'));
 
-		for ($i = $numberOfVideosToImport - 1; $i >= 0; $i--) {		
-		
+		for ($i = $numberOfVideosToImport - 1; $i >= 0; $i--) {
+
 		///print "DEBUG: Inside the for loop. $i. <br />";
-		
-		$url =  $response["body"]["data"][$i]["uri"];			
+
+		$url =  $response["body"]["data"][$i]["uri"];
 		$title = addslashes ($response["body"]["data"][$i]["name"]);
 		$embed = htmlspecialchars($response["body"]["data"][$i]["embed"]["html"]);
 
@@ -166,7 +166,7 @@ foreach ($selectedAlbumsArray as $album) {
 		$checkDuplicate = $mysqli->query("SELECT * from `streaming`.`fbcvimeo` WHERE `album` = \"$albumNameInsert\" AND `videourl` = \"$url\"");
 			if($checkDuplicate){} else {die('Error : ('. $mysqli->errno .') '. $mysqli->error);}
 		$resultsDuplicate = $mysqli->affected_rows;
-		
+
 		/// print "<br />URL to add: $url<br />";
 		// if $resultsDuplicate == 0, the url does not exist in the db. add it.
 		if ($resultsDuplicate == "0") {
@@ -175,7 +175,7 @@ foreach ($selectedAlbumsArray as $album) {
 				/// print "URL not empty, adding";
 				$albumNameInsert2 = addslashes($albumNameInsert);
 				$addToDB = $mysqli->query("INSERT INTO `streaming`.`fbcvimeo` (`album`, `videourl`, `title`, `embedcode`) VALUES ('$albumNameInsert2', '$url', '$title', '$embed')");
-					
+
 				if($addToDB){
 					/// print "$title added to database.<br />";
 					$listAdded[] = $title;
@@ -184,17 +184,17 @@ foreach ($selectedAlbumsArray as $album) {
 					die('Error : ('. $mysqli->errno .') '. $mysqli->error);
 				}
 			}
-			else { 
-			/// print "URL empty?!"; 
+			else {
+			/// print "URL empty?!";
 			}
 		}
 		else {
 			/// print "<strike>$title</strike> exists, not added to database.<br />";
 			$listSkipped[] = $title;
 			$statsSkipped++;
-		}		
+		}
 	}
-		
+
 	}
 	if ($numberOfVideosToImport >= 51) {
 		print "videos over 50, break or exit";
@@ -208,16 +208,16 @@ foreach ($selectedAlbumsArray as $album) {
 				//print "<pre>";
 				//print_r ($response);
 				//print "</pre>";
-				
-			
-				
+
+
+
 			// start with the "last" video on this page and work your way to the first
-			// $i = $numberOfVideosOnPage; 
-			for ($i = 49; $i >= 0; $i--) {		
-				
+			// $i = $numberOfVideosOnPage;
+			for ($i = 49; $i >= 0; $i--) {
+
 				// print "DEBUG: Inside the for loop. $i. <br />";
-				
-				$url =  $response["body"]["data"][$i]["uri"];			
+
+				$url =  $response["body"]["data"][$i]["uri"];
 				$title = addslashes ($response["body"]["data"][$i]["name"]);
 				$embed = htmlspecialchars($response["body"]["data"][$i]["embed"]["html"]);
 
@@ -225,15 +225,15 @@ foreach ($selectedAlbumsArray as $album) {
 				$checkDuplicate = $mysqli->query("SELECT * from `streaming`.`fbcvimeo` WHERE `album` = \"$albumNameInsert\" AND `videourl` = \"$url\"");
 					if($checkDuplicate){} else {die('Error : ('. $mysqli->errno .') '. $mysqli->error);}
 				$resultsDuplicate = $mysqli->affected_rows;
-				
+
 				// if $resultsDuplicate == 0, the url does not exist in the db. add it.
 				if ($resultsDuplicate == "0") {
 					// if url is not empty, add it
 					if ($url) {
 						//// $albumNameInsert2 = addslashes($albumNameInsert);
-						//// $addToDB = $mysqli->query("INSERT INTO `streaming`.`fbcvimeo` (`album`, `videourl`, `title`, `embedcode`) VALUES ('$albumNameInsert2', '$url', '$title', '$embed')");	
+						//// $addToDB = $mysqli->query("INSERT INTO `streaming`.`fbcvimeo` (`album`, `videourl`, `title`, `embedcode`) VALUES ('$albumNameInsert2', '$url', '$title', '$embed')");
 						$addToDB = "true";
-							
+
 						if($addToDB){
 							// print "$title added to database.<br />";
 							$listAdded[] = $title;
@@ -251,18 +251,18 @@ foreach ($selectedAlbumsArray as $album) {
 				// $i--;
 			}
 			$lastPage = $lastPage - 1;
-			
+
 		//end while
 		}
 	}
-	
+
 	/// print_r ($response["body"]["data"]);
 
-	// print stats	
+	// print stats
 	print "Total videos: $albumTotalVideosVimeo<br />";
 	// print "Last page: $lastPage<br />";
 	print "Videos added: $statsAdded. Videos skipped: $statsSkipped.<br />";
-	
+
 	if ($listAdded) {
 	?>
 		<h3>List of added videos</h3>
@@ -272,7 +272,7 @@ foreach ($selectedAlbumsArray as $album) {
 
 	<?php
 	}
-	if ($listSkipped) {	
+	if ($listSkipped) {
 	?>
 		<h3>List of skipped videos</h3>
 		<div style="height: 100px; overflow: auto;">
