@@ -58,12 +58,15 @@ $key = $_GET["key"];
 // get all albums from Vimeo 
 $getAlbumsResponse = $lib->request('/me/albums/', 'GET');
 
+// pull name/url for each album to make a form
 $albumInfo = array();
 $i = 0;
 while ($getAlbumsResponse["body"]["data"][$i]["name"]) {
+	// get the full album uri
 	$uri = $getAlbumsResponse["body"]["data"][$i]["uri"];
 	$uriPieces = explode("/", $uri);
-	
+
+	// get just the unique part of the URI - the digits that indicate the actual album
 	$finalURI = $uriPieces[4];
 	$albumName = $getAlbumsResponse["body"]["data"][$i]["name"];
 	
@@ -71,8 +74,7 @@ while ($getAlbumsResponse["body"]["data"][$i]["name"]) {
 	$i++;
 }
 
-// make a form here from albumInfo to pick which albums to import.
-
+// make a form here from array albumInfo() to pick which albums to import.
 print "
 		<form method=\"post\">\n
 		<h1>List of Albums</h1>
