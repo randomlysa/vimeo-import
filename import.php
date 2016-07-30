@@ -254,7 +254,7 @@ foreach ($selectedAlbumsArray as $album) {
 				}
 				// $i--;
 			}
-			$lastPage = $lastPage - 1;
+			$lastPage--;
 
 		//end while
 		}
