@@ -234,8 +234,8 @@ foreach ($selectedAlbumsArray as $album) {
 				if ($resultsDuplicate == "0") {
 					// if url is not empty, add it
 					if ($url) {
-						//// $albumNameInsert2 = addslashes($albumNameInsert);
-						//// $addToDB = $mysqli->query("INSERT INTO `streaming`.`fbcvimeo` (`album`, `videourl`, `title`, `embedcode`) VALUES ('$albumNameInsert2', '$url', '$title', '$embed')");
+						$albumNameInsert2 = addslashes($albumNameInsert);
+						$addToDB = $mysqli->query("INSERT INTO `development`.`vimeo-videos` (`album`, `videourl`, `title`, `embedcode`) VALUES ('$albumNameInsert2', '$url', '$title', '$embed')");
 						$addToDB = "true";
 
 						if($addToDB){
