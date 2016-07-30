@@ -197,8 +197,12 @@ foreach ($selectedAlbumsArray as $album) {
 
 	}
 	if ($numberOfVideosToImport >= 51) {
-		print "videos over 50, break or exit";
-		exit;
+		// print "videos over 50, break or exit";
+		// exit;
+		// number of pages = floor ($numberOfVideosToImport / 50) + 1
+		$lastPage = floor ($numberOfVideosToImport / 50) + 1;
+		print $lastPage;
+
 		while ($lastPage > 0) {
 
 			// get videos, starting with the last page, starting with the last video
